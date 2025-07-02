@@ -4,12 +4,11 @@
 
 ## What is this?
 
-MASX OpenChat LLM is your gateway to conversational AI powered by the state-of-the-art OpenChat-3.5 model. Think of it as your personal AI assistant that you can integrate into any application, website, or service through simple HTTP requests.
+MASX OpenChat LLM powered by the state-of-the-art OpenChat-3.5 model.
 
-### Key Features
 - **Powered by OpenChat-3.5**: Latest conversational AI model with 7B parameters
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Requirements
 
