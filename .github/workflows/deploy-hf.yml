@@ -1,20 +1,24 @@
-name: Deploy to Hugging Face Space masx-openchat-llm
+name: Sync to Hugging Face Space
 
 on:
   push:
-    branches: [ main ]  # or your deployment branch
+    branches: [main]
+  workflow_dispatch:  # optional manual trigger
 
 jobs:
-  deploy:
+  sync-to-hub:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout the repo
         uses: actions/checkout@v3
-
-      - name: Upload to Hugging Face Space
-        uses: huggingface/huggingface-cli-action@v0.1.0
         with:
-          api_token: ${{ secrets.HF_TOKEN }}
-          repo_id: AteetVatan/masx-openchat-llm
-          repo_type: space
+          fetch-depth: 0       # needed for force pushes
+          lfs: true            # handles large files via Git LFS
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git remote add space https://$HF_TOKEN@huggingface.co/spaces/AteetVatan/masx-openchat-llm
+          git push --force space main
