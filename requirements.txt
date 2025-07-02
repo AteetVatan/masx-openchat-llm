@@ -1,0 +1,17 @@
+# Core FastAPI dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# Machine Learning and Transformers
+torch>=2.1.0
+transformers>=4.36.0
+accelerate>=0.25.0
+
+# Additional utilities
+numpy>=1.24.0
+requests>=2.31.0
+
+# Optional: For better performance and monitoring
+# tensorboard>=2.15.0  # Uncomment if you need training monitoring
+# wandb>=0.16.0        # Uncomment if you need experiment tracking
