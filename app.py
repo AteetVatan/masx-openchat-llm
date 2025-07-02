@@ -17,8 +17,9 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI(
     title="masx-openchat-llm",
     description="MASX AI service exposing the OpenChat-3.5 LLM as an inference endpoint",
-    version="1.0.0"
+    version="1.0.0",
 )
+
 
 # Request ********schema*******
 class PromptRequest(BaseModel):
@@ -26,19 +27,26 @@ class PromptRequest(BaseModel):
     max_tokens: int = 256
     temperature: float = 0.0  # Deterministic by default
 
+
 # Response ********schema*******
 class ChatResponse(BaseModel):
     response: str
+
 
 @app.get("/status")
 async def status():
     """Check model status and max supported tokens."""
     try:
         max_context = getattr(model.config, "max_position_embeddings", "unknown")
-        return {"status": "ok", "model": model.name_or_path, "max_context_tokens": max_context}
+        return {
+            "status": "ok",
+            "model": model.name_or_path,
+            "max_context_tokens": max_context,
+        }
     except Exception as e:
         logger.error("Status error: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: PromptRequest):
@@ -49,12 +57,12 @@ async def chat(req: PromptRequest):
         # Dynamically choose device at request time
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.info(f"Using device: {device}")
-        
-        # Move model to device if not 
+
+        # Move model to device if not
         if next(model.parameters()).device != device:
             logger.info("Moving model to %s", device)
             model.to(device)
-        
+
         # Tokenize input
         inputs = tokenizer(req.prompt, return_tensors="pt").to(device)
 
@@ -70,7 +78,7 @@ async def chat(req: PromptRequest):
         generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         # Trim echoed prompt if present
-        response_text = generated_text[len(req.prompt):].strip()
+        response_text = generated_text[len(req.prompt) :].strip()
 
         logger.info("Generated response: %s", response_text)
         return ChatResponse(response=response_text)
@@ -79,5 +87,6 @@ async def chat(req: PromptRequest):
         logger.error("Inference failed: %s", str(e), exc_info=True)
         raise HTTPException(status_code=500, detail="Inference failure: " + str(e))
 
-if __name__ == "__main__":    
+
+if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8080, log_level="info")
