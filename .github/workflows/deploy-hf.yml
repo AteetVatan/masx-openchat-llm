@@ -22,4 +22,4 @@ jobs:
         run: |
           git config --global --unset credential.helper
           git remote add space https://${HF_TOKEN}@huggingface.co/spaces/AteetVatan/masx-openchat-llm
-          git push --force space main
+          git push --force https://${{ secrets.HF_TOKEN }}@huggingface.co/spaces/AteetVatan/masx-openchat-llm HEAD:main
