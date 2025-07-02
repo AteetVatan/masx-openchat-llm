@@ -1,25 +1,27 @@
-name: Sync to Hugging Face Space
+name: Deploy to Hugging Face Space
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:  # optional manual trigger
+    branches: [ main ]
+  workflow_dispatch:  # allows manual run
 
 jobs:
-  sync-to-hub:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo
+      - name: Checkout full repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0       # needed for force pushes
-          lfs: true            # handles large files via Git LFS
+          fetch-depth: 0  # required for force-push to work
+          lfs: true       # if you use Git LFS for model files
 
-      - name: Push to Hugging Face Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Set up Git identity
         run: |
-          git config --global --unset credential.helper
-          git remote add space https://${HF_TOKEN}@huggingface.co/spaces/AteetVatan/masx-openchat-llm
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push to Hugging Face Space via HTTPS
+        run: |
+          git remote add hf-origin https://huggingface.co/spaces/AteetVatan/masx-openchat-llm
           git push --force https://${{ secrets.HF_TOKEN }}@huggingface.co/spaces/AteetVatan/masx-openchat-llm HEAD:main
