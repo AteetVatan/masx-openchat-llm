@@ -1,25 +1,25 @@
+---
+title: MASX OpenChat
+emoji: 🏹🏹🏹
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+pinned: false
+app_file: app.py
+---      
+       
 # MASX OpenChat LLM
 
 > **A FastAPI service that brings the OpenChat-3.5 language model to life through a clean, scalable REST API.**
 
 ## What is this?
 
-MASX OpenChat LLM powered by the state-of-the-art OpenChat-3.5 model.
+MASX OpenChat LLM is your gateway to conversational AI powered by the state-of-the-art OpenChat-3.5 model. Think of it as your personal AI assistant that you can integrate into any application, website, or service through simple HTTP requests.
 
+### Key Features
 - **Powered by OpenChat-3.5**: Latest conversational AI model with 7B parameters
 
-## Folder Structure
-
-masx-openchat-llm/
-├── app.py                #  FastAPI entrypoint
-├── model_loader.py       #  Load model only once (OpenChat/Mistral)
-├── requirements.txt      #  Only include inference packages
-├── Dockerfile            #  Used automatically by HF
-├── env.example           #  Environment variables template
-└── README.md             #  Endpoint doc & HF Space link
-
-
-##  Quick Start
+## 🚀 Quick Start
 
 ### Requirements
 
