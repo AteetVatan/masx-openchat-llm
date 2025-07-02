@@ -1,0 +1,20 @@
+name: Deploy to Hugging Face Space masx-openchat-llm
+
+on:
+  push:
+    branches: [ main ]  # or your deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Upload to Hugging Face Space
+        uses: huggingface/huggingface-cli-action@v0.1.0
+        with:
+          api_token: ${{ secrets.HF_TOKEN }}
+          repo_id: AteetVatan/masx-openchat-llm
+          repo_type: space

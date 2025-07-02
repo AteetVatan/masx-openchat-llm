@@ -8,6 +8,17 @@ MASX OpenChat LLM powered by the state-of-the-art OpenChat-3.5 model.
 
 - **Powered by OpenChat-3.5**: Latest conversational AI model with 7B parameters
 
+## Folder Structure
+
+masx-openchat-llm/
+├── app.py                #  FastAPI entrypoint
+├── model_loader.py       #  Load model only once (OpenChat/Mistral)
+├── requirements.txt      #  Only include inference packages
+├── Dockerfile            #  Used automatically by HF
+├── env.example           #  Environment variables template
+└── README.md             #  Endpoint doc & HF Space link
+
+
 ##  Quick Start
 
 ### Requirements
