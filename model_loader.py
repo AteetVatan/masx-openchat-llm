@@ -16,10 +16,10 @@ CTX_LEN = int(os.getenv("CTX_LEN", "8192"))       # Use full 8K context
 
 # === Load Model ===
 model = AutoModelForCausalLM.from_pretrained(
-    model_path=MODEL_REPO,
+    MODEL_REPO,
     model_file=MODEL_FILE,
     model_type=MODEL_TYPE,
     context_length=CTX_LEN,
-    gpu_layers=0,               # Set >0 if you want to offload layers to GPU
+    gpu_layers=0,
     local_files_only=False,
 )
