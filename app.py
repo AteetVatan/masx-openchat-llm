@@ -1,92 +1,79 @@
 """
-This is the main file for the OpenChat-3.5 LLM API.
--model_loader.py file to load the model and tokenizer.
+app.py FastAPI API for Quantized OpenChat 3.5 (GGUF) using ctransformers
 """
 
 import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from model_loader import tokenizer, model
+from model_loader import model
 import uvicorn
-import torch
+from ctransformers import AutoTokenizer  # Add this at the top
 
+# Logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Initialize FastAPI app
+tokenizer = model.tokenize  # Use model's built-in tokenizer if available
+
+# FastAPI app
 app = FastAPI(
     title="masx-openchat-llm",
-    description="MASX AI service exposing the OpenChat-3.5 LLM as an inference endpoint",
+    description="MASX AI service exposing a quantized OpenChat-3.5 model (GGUF)",
     version="1.0.0",
 )
 
 
-# Request ********schema*******
+# Request schema
 class PromptRequest(BaseModel):
     prompt: str
     max_tokens: int = 256
-    temperature: float = 0.0  # Deterministic by default
+    temperature: float = 0.0
 
 
-# Response ********schema*******
+# Response schema
 class ChatResponse(BaseModel):
     response: str
 
 
 @app.get("/status")
 async def status():
-    """Check model status and max supported tokens."""
     try:
-        max_context = getattr(model.config, "max_position_embeddings", "unknown")
         return {
             "status": "ok",
-            "model": model.name_or_path,
-            "max_context_tokens": max_context,
+            "model_path": getattr(model, "model_path", "unknown"),
+            "model_type": getattr(model, "model_type", "unknown"),
+            "context_length": getattr(model, "context_length", "unknown"),
+            "gpu_layers": getattr(model, "gpu_layers", 0),
         }
     except Exception as e:
-        logger.error("Status error: %s", str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Status check failed: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Model status check failed")
 
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: PromptRequest):
-    """OpenChat-3.5 Run inference prompt"""
     try:
-        logger.info("Received prompt: %s", req.prompt)
+        logger.info("Prompt: %s", req.prompt)
 
-        # Dynamically choose device at request time
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        logger.info(f"Using device: {device}")
+        prompt_tokens = model.tokenize(req.prompt)
+        if len(prompt_tokens) > model.context_length:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Prompt too long ({len(prompt_tokens)} tokens). Max context: {model.context_length}",
+            )
 
-        # Move model to device if not
-        if next(model.parameters()).device != device:
-            logger.info("Moving model to %s", device)
-            model.to(device)
-
-        # Tokenize input
-        inputs = tokenizer(req.prompt, return_tensors="pt").to(device)
-
-        # Generation parameters
-        gen_kwargs = {
-            "max_new_tokens": req.max_tokens,
-            "temperature": req.temperature,
-            "do_sample": req.temperature > 0,
-        }
-
-        # Generate output
-        outputs = model.generate(**inputs, **gen_kwargs)
-        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-        # Trim echoed prompt if present
-        response_text = generated_text[len(req.prompt) :].strip()
-
-        logger.info("Generated response: %s", response_text)
-        return ChatResponse(response=response_text)
-
+        response = model(
+            req.prompt,
+            max_new_tokens=req.max_tokens,
+            temperature=req.temperature,
+            stop=["</s>"],
+        )
+        logger.info("Response: %s", response)
+        return ChatResponse(response=response.strip())
     except Exception as e:
-        logger.error("Inference failed: %s", str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail="Inference failure: " + str(e))
+        logger.error("Chat error: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Inference failure")
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, log_level="info")
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, log_level="info")

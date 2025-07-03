@@ -1,20 +1,24 @@
-# model_loader.py
 import os
+from ctransformers import AutoModelForCausalLM
 
-# Safe fallback if ENV vars are not set (e.g., during local dev)
+# Optional: create a local cache dir for gguf model if needed
 os.environ.setdefault("HF_HOME", os.path.expanduser("~/.hf_home"))
-os.environ.setdefault("TRANSFORMERS_CACHE", os.path.expanduser("~/.cache/transformers"))
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch, os
+# Load environment variables if you plan to use .env (optional)
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
-MODEL_NAME = os.getenv("MODEL_NAME", "openchat/openchat-3.5-1210")
 
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+# Model path or name from environment, fallback to default OpenChat
+MODEL_REPO = os.getenv("MODEL_REPO", "TheBloke/openchat_3.5-GGUF")
+MODEL_FILE = os.getenv("MODEL_FILE", "openchat_3.5.Q4_K_M.gguf")
+MODEL_TYPE = os.getenv("MODEL_TYPE", "mistral")  # OpenChat 3.5 is Mistral-compatible
 
-# Load model initially on CPU
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to("cpu")
+# Load quantized GGUF model using ctransformers
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_REPO,
+    model_file=MODEL_FILE,
+    model_type=MODEL_TYPE,
+    gpu_layers=0,
+    local_files_only=False,
+)
