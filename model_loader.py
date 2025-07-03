@@ -2,8 +2,8 @@
 import os
 
 # Safe fallback if ENV vars are not set (e.g., during local dev)
-os.environ.setdefault("HF_HOME", "/data/hf_home")
-os.environ.setdefault("TRANSFORMERS_CACHE", "/data/cache")
+os.environ.setdefault("HF_HOME", os.path.expanduser("~/.hf_home"))
+os.environ.setdefault("TRANSFORMERS_CACHE", os.path.expanduser("~/.cache/transformers"))
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch, os

@@ -1,25 +1,34 @@
-# Base image
 FROM python:3.10-slim
 
-# Set cache envs for Transformers & HF Hub (must come before any Python install)
-ENV HF_HOME=/data/hf_home
-ENV TRANSFORMERS_CACHE=/data/cache
+# Create a non-root user with UID 1000
+RUN useradd -m -u 1000 user
 
-# Install system dependencies
+# Switch to that user
+USER user
+ENV HOME=/home/user
+WORKDIR /home/user/app
+
+# Set cache dirs inside user home
+ENV HF_HOME=$HOME/.hf_home
+ENV TRANSFORMERS_CACHE=$HOME/.cache/transformers
+
+# Create cache directories
+RUN mkdir -p $HF_HOME $TRANSFORMERS_CACHE
+
+# Switch back to root to install dependencies
+USER root
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
-WORKDIR /app
+# Install Python deps under user home
+COPY --chown=user:user requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copy app files
+COPY --chown=user:user . .
 
-# Copy all project files
-COPY . .
-
-# Expose port (default for HF Spaces)
+# Expose port and switch user
 EXPOSE 7860
+USER user
 
-# Run the app
+# Entrypoint
 CMD ["python", "app.py"]
