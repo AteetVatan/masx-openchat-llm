@@ -1,33 +1,41 @@
 ---
 title: MASX OpenChat
-emoji: 🏹🏹🏹
+emoji: 🤖
 colorFrom: indigo
 colorTo: blue
 sdk: docker
 pinned: false
 app_file: app.py
----    
+---
+
 # MASX OpenChat LLM
 
 **A FastAPI service that brings the OpenChat-3.5 language model to life through a clean, scalable REST API.**
 
 ## What is this?
 
-MASX OpenChat LLM is your gateway to conversational AI powered by the state-of-the-art OpenChat-3.5 model. Think of it as your personal AI assistant that you can integrate into any application, website, or service through simple HTTP requests.
+MASX LLM OpenChat-3.5 model.
 
-### Key Features
+### 🔑 Key Features
+
 - **Powered by OpenChat-3.5**: Latest conversational AI model with 7B parameters
+- **FastAPI + Docker**: Clean, modular, and containerized
+- **Easy integration**: REST API ready for real-world apps
+
+---
 
 ## 🚀 Quick Start
 
 ### Requirements
 
-- **8GB+ RAM** (16GB+ recommended for optimal performance)
-- **GPU with 8GB+ VRAM** (optional, but recommended for speed)
+- **8GB+ RAM** (16GB+ recommended)
+- **GPU with 8GB+ VRAM** (optional but faster)
 
-### Dependencies
-   ```bash
-   pip install -r requirements.txt
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+
    ```
 
 ### Config
