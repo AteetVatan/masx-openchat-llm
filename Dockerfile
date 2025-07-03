@@ -1,40 +1,39 @@
-# Base image
+# 🔹 Base image
 FROM python:3.10-slim
 
-# Create non-root user (required for Hugging Face Spaces)
+# 🔹 Create Hugging Face-compliant non-root user
 RUN useradd -m -u 1000 user
 
-# Set paths
-ENV HOME=/home/user
-ENV APP_HOME=$HOME/app
-ENV HF_HOME=$HOME/.hf_home
+# 🔹 Set environment variables
+ENV HOME=/home/user \
+    APP_HOME=/home/user/app \
+    HF_HOME=/home/user/.hf_home \
+    OMP_NUM_THREADS=8  # ✅ Use all 8 vCPUs
 
-# Use app directory
+# 🔹 Set working directory
 WORKDIR $APP_HOME
 
-# Switch to root for system setup
+# 🔹 Install system dependencies (root)
 USER root
-
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt and install Python dependencies
+# 🔹 Install Python dependencies
 COPY --chown=user:user requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# 🔹 Copy app code and give ownership to non-root user
 COPY --chown=user:user . .
 
-# Ensure cache directories exist and are user-writable
+# 🔹 Ensure HF model cache dir is writable
 RUN mkdir -p $HF_HOME && chown -R user:user $HF_HOME
 
-# Set to non-root user (required for HF Spaces)
+# 🔹 Switch to non-root user (required by HF Spaces)
 USER user
 
-# Expose default port
+# 🔹 Expose the FastAPI port
 EXPOSE 7860
 
-# Entrypoint
+# 🔹 Start your app
 CMD ["python", "app.py"]
