@@ -35,9 +35,11 @@ class PromptRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
 
+
 @app.get("/")
 def root():
     return {"message": "MASX OpenChat API is running"}
+
 
 @app.get("/status")
 async def status():

@@ -8,7 +8,6 @@ RUN useradd -m -u 1000 user
 ENV HOME=/home/user
 ENV APP_HOME=/home/user/app
 ENV HF_HOME=/home/user/.hf_home
-ENV OMP_NUM_THREADS=8
 
 # 🔹 Set working directory
 WORKDIR $APP_HOME
