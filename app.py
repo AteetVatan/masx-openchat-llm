@@ -3,7 +3,7 @@ app.py FastAPI API for Quantized OpenChat 3.5 (GGUF) using ctransformers
 """
 
 import logging
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from model_loader import model
 import uvicorn
@@ -37,7 +37,9 @@ class ChatResponse(BaseModel):
 
 
 @app.get("/")
-def root():
+def root(request: Request):
+    if request.query_params.get("logs") == "container":
+        return {"status": "log-polling"}  # optional message
     return {"message": "MASX OpenChat API is running"}
 
 
