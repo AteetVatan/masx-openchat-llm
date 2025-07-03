@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from model_loader import model
 import uvicorn
 from ctransformers import AutoTokenizer  # Add this at the top
+import time
 
 # Logger
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ async def status():
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: PromptRequest):
+    start_time = time.time()
     try:
         logger.info("Prompt: %s", req.prompt)
 
@@ -71,6 +73,8 @@ async def chat(req: PromptRequest):
             temperature=req.temperature,
             stop=["</s>"],
         )
+        end_time = time.time()
+        logger.info("Response time: %s seconds", end_time - start_time)
         logger.info("Response: %s", response)
         return ChatResponse(response=response.strip())
     except Exception as e:
