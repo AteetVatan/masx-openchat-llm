@@ -1,4 +1,10 @@
 # model_loader.py
+import os
+
+# Safe fallback if ENV vars are not set (e.g., during local dev)
+os.environ.setdefault("TRANSFORMERS_CACHE", "/app/cache")
+os.environ.setdefault("HF_HOME", "/app/hf_home")
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch, os
 from dotenv import load_dotenv
