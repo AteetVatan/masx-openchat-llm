@@ -6,11 +6,10 @@ colorTo: blue
 sdk: docker
 pinned: false
 app_file: app.py
----      
-       
+---    
 # MASX OpenChat LLM
 
-> **A FastAPI service that brings the OpenChat-3.5 language model to life through a clean, scalable REST API.**
+**A FastAPI service that brings the OpenChat-3.5 language model to life through a clean, scalable REST API.**
 
 ## What is this?
 
