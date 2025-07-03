@@ -5,10 +5,10 @@ FROM python:3.10-slim
 RUN useradd -m -u 1000 user
 
 # 🔹 Set environment variables
-ENV HOME=/home/user \
-    APP_HOME=/home/user/app \
-    HF_HOME=/home/user/.hf_home \
-    OMP_NUM_THREADS=8  # ✅ Use all 8 vCPUs
+ENV HOME=/home/user
+ENV APP_HOME=/home/user/app
+ENV HF_HOME=/home/user/.hf_home
+ENV OMP_NUM_THREADS=8
 
 # 🔹 Set working directory
 WORKDIR $APP_HOME
